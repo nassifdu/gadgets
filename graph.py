@@ -5,14 +5,32 @@ from decimal import Decimal
 
 #--- helper functions
 
-def arange(start: str, stop: str, step: str):
-    start = Decimal(start)
-    stop = Decimal(stop)
-    step = Decimal(step)
+from decimal import Decimal
+from typing import List, Union
 
-    n_steps = int((stop - start) / step)
+from decimal import Decimal
+from typing import List, Union
 
-    return [float(start + i * step) for i in range(n_steps)]
+def arange(start, stop, step) -> list[float]:
+    current = Decimal(str(start))
+    target = Decimal(str(stop))
+    increment = Decimal(str(step))
+
+    if increment == 0:
+        raise ValueError("arange() step argument must not be zero")
+
+    result = []
+
+    if increment > 0:
+        while current <= target:
+            result.append(float(current))
+            current += increment
+    else:
+        while current >= target:
+            result.append(float(current))
+            current += increment
+
+    return result
 
 #--- graphs
 
