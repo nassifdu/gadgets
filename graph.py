@@ -41,26 +41,32 @@ bar_symbols = ' ▁▂▃▄▅▆▇█'
 class bar:
     def __init__(self, values: list[float], width: int = 1, res: float = .5, spacing: int = 1, colourful: bool = True):
         self.values = values
-        self.n_y = ceil(max(values) / res)
         self.res = res
         self.width = width
         self.spacing = spacing
         self.colourful = colourful
-        self.max_y_str_len = max(len(str(i * self.res)) for i in range(self.n_y, 0, -1))
+
+        # calculate max and min bounds in steps of res
+        self.n_y = ceil(max(values) / res)
+        # ensure 0 or negative minimums are caught
+        self.min_y = floor(min(0, min(values)) / res)
+
+        # include self.min_y down to self.n_y
+        self.max_y_str_len = max(len(str(i * self.res)) for i in range(self.n_y, self.min_y - 1, -1))
 
     def draw(self):
         print()
-        for i in range(self.n_y, 0, -1):
+        for i in range(self.n_y, self.min_y - 1, -1):
             # step
             y = i * self.res
-            # include spaces if needed to maintain  (e.g., '10.0' and '9.0 ')
+            # include spaces if needed to maintain alignment
             y_level = str(y) + ' ' + (self.max_y_str_len - len(str(y))) * '▔' + '▔▏'
             tui.printf(y_level)
             # print each line
             for j, val in enumerate(self.values):
                 if val >= y:
                     sym = bar_symbols[len(bar_symbols) - 1]
-                elif y - val < self.res:
+                elif y - val < self.res and val > y - self.res:
                     sym = bar_symbols[floor(((val % self.res) / self.res) * len(bar_symbols))]
                 else:
                     sym = ' '
